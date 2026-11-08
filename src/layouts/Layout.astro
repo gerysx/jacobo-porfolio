@@ -1,0 +1,59 @@
+---
+import "../styles/global.css"
+import { PROFILE } from "../data/profile"
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = `${PROFILE.name} · ${PROFILE.role}`,
+  description = `${PROFILE.name}, ${PROFILE.role.toLowerCase()} en ${PROFILE.location}. ${PROFILE.tagline}. European Financial Advisor (EFA) y candidato al CFA Nivel I.`,
+} = Astro.props
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#0f2a2a" />
+    <script is:inline>
+      ;(() => {
+        const d = document.documentElement
+        let t = null
+        try { t = localStorage.getItem("theme") } catch {}
+        if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) d.classList.add("dark")
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion")
+      })()
+    </script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: PROFILE.name,
+        jobTitle: PROFILE.role,
+        address: { "@type": "PostalAddress", addressLocality: PROFILE.location, addressCountry: "ES" },
+        sameAs: [PROFILE.linkedin],
+      })}
+    />
+  </head>
+  <body class="grain min-h-screen overflow-x-hidden">
+    <slot />
+    <script>
+      import { initMotion } from "../lib/motion"
+      initMotion()
+    </script>
+  </body>
+</html>

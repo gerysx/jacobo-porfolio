@@ -1,0 +1,71 @@
+---
+import { PROFILE } from "../data/profile"
+
+// Curva decorativa de crecimiento (no son datos reales)
+const pts = [0, 6, 4, 11, 9, 16, 14, 21, 19, 27, 24, 31, 36, 33, 41, 46, 43, 52, 58, 56, 64, 71, 69, 78]
+const W = 600
+const H = 320
+const step = W / (pts.length - 1)
+const line = pts.map((v, i) => `${i ? "L" : "M"}${(i * step).toFixed(1)} ${(H - 30 - (v / 80) * (H - 60)).toFixed(1)}`).join(" ")
+const area = `${line} L${W} ${H} L0 ${H} Z`
+const last = { x: W, y: H - 30 - (78 / 80) * (H - 60) }
+---
+
+<section id="inicio" class="relative overflow-hidden pt-28 sm:pt-36">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full bg-gold/10 blur-3xl"></div>
+  <div class="container-x grid items-center gap-12 pb-20 lg:grid-cols-[1.1fr_1fr] lg:pb-28">
+    <div>
+      <p data-hero-item class="eyebrow mb-6 flex items-center gap-3">
+        <span class="h-px w-8 bg-gold"></span>{PROFILE.role} · {PROFILE.location}
+      </p>
+      <h1 data-hero-item class="h-display text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">
+        Tu patrimonio,<br /> con <span class="italic-gold">método</span> y<br class="hidden sm:block" /> a largo plazo.
+      </h1>
+      <p data-hero-item class="mt-7 max-w-xl text-lg leading-relaxed text-muted">
+        Soy {PROFILE.name}. Acompaño a clientes con patrimonio a construir carteras que encajan con sus objetivos, su horizonte y su forma de entender el riesgo.
+      </p>
+      <div data-hero-item class="mt-9 flex flex-wrap gap-3">
+        <a href="#contacto" class="group inline-flex items-center gap-2 rounded-full bg-pine px-6 py-3.5 font-medium text-paper transition hover:bg-gold dark:bg-gold dark:text-paper dark:hover:bg-ink">
+          Hablemos de tu cartera
+          <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#trayectoria" class="inline-flex items-center gap-2 rounded-full border border-line px-6 py-3.5 font-medium transition hover:border-ink">Ver trayectoria</a>
+      </div>
+      <ul data-hero-item class="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-gold"></span>European Financial Advisor (EFA)</li>
+        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-gold"></span>Candidato CFA® Nivel I</li>
+        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-gold"></span>MiFID II</li>
+      </ul>
+    </div>
+
+    <div data-chart class="relative">
+      <div data-hero-item class="card relative overflow-hidden p-6 shadow-[0_30px_80px_-30px_rgb(var(--pine)/0.35)]">
+        <div class="mb-4 flex items-start justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-widest text-muted">Cartera ilustrativa</p>
+            <p class="mt-1 font-serif text-3xl">Crecimiento compuesto</p>
+          </div>
+          <span class="whitespace-nowrap rounded-full bg-pine/10 px-3 py-1 text-xs font-medium text-pine">Largo plazo</span>
+        </div>
+        <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="Curva ilustrativa de crecimiento de una cartera">
+          <defs>
+            <linearGradient id="heroFill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="rgb(var(--gold))" stop-opacity="0.35"></stop>
+              <stop offset="1" stop-color="rgb(var(--gold))" stop-opacity="0"></stop>
+            </linearGradient>
+          </defs>
+          {[0, 1, 2, 3].map((i) => <line x1="0" x2={W} y1={30 + i * 86} y2={30 + i * 86} stroke="rgb(var(--line))" stroke-dasharray="4 6" />)}
+          <path data-chart-area d={area} fill="url(#heroFill)"></path>
+          <path data-chart-line d={line} fill="none" stroke="rgb(var(--gold))" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle data-chart-dot cx={last.x - 6} cy={last.y} r="7" fill="rgb(var(--gold))" stroke="rgb(var(--card))" stroke-width="3"></circle>
+        </svg>
+        <div class="mt-4 grid grid-cols-3 gap-3 border-t border-line pt-4 text-sm">
+          <div><p class="text-muted">Renta variable</p><p class="font-medium">Global</p></div>
+          <div><p class="text-muted">Renta fija</p><p class="font-medium">Diversificada</p></div>
+          <div><p class="text-muted">Revisión</p><p class="font-medium">Periódica</p></div>
+        </div>
+      </div>
+      <p class="mt-3 text-right text-xs text-muted">Gráfico ilustrativo, no representa datos reales.</p>
+    </div>
+  </div>
+</section>

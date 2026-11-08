@@ -1,0 +1,90 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/fraunces";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Paleta: verde pino profundo + oro apagado, sobria y de confianza */
+:root {
+  --paper: 247 245 239;
+  --card: 255 255 255;
+  --ink: 16 32 32;
+  --muted: 88 102 100;
+  --line: 222 218 206;
+  --gold: 168 128 56;
+  --pine: 18 58 54;
+  color-scheme: light;
+}
+.dark {
+  --paper: 10 20 20;
+  --card: 16 30 30;
+  --ink: 236 233 224;
+  --muted: 150 164 160;
+  --line: 38 56 54;
+  --gold: 214 176 104;
+  --pine: 120 190 170;
+  color-scheme: dark;
+}
+
+html {
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  @apply font-sans;
+  background: rgb(var(--paper));
+}
+::selection {
+  background: rgb(var(--gold) / 0.3);
+}
+
+.container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+.eyebrow {
+  @apply text-xs font-medium uppercase tracking-[0.2em] text-gold;
+}
+.h-display {
+  @apply font-serif font-light tracking-tight;
+  font-variation-settings: "SOFT" 50, "opsz" 144;
+}
+.italic-gold {
+  @apply italic text-gold;
+}
+.card {
+  @apply rounded-2xl border border-line bg-card;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Si hay JS y movimiento, los elementos .reveal empiezan ocultos (GSAP los muestra) */
+html.motion .reveal {
+  visibility: hidden;
+}
+.split-word {
+  display: inline-block;
+}
+
+/* Grano sutil de fondo */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+input[type="range"] {
+  accent-color: rgb(var(--gold));
+}

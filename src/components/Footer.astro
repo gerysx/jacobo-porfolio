@@ -1,0 +1,20 @@
+---
+import { PROFILE, DISCLAIMER } from "../data/profile"
+const year = new Date().getFullYear()
+---
+
+<footer class="border-t border-line py-12">
+  <div class="container-x space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <p class="font-serif text-2xl">{PROFILE.name}</p>
+      <nav class="flex gap-6 text-sm text-muted">
+        <a href="#enfoque" class="hover:text-ink">Enfoque</a>
+        <a href="#mercados" class="hover:text-ink">Mercados</a>
+        <a href="#trayectoria" class="hover:text-ink">Trayectoria</a>
+        <a href="#contacto" class="hover:text-ink">Contacto</a>
+      </nav>
+    </div>
+    <p class="max-w-3xl text-xs leading-relaxed text-muted">{DISCLAIMER}</p>
+    <p class="text-xs text-muted">© {year} {PROFILE.name}. Madrid.</p>
+  </div>
+</footer>
