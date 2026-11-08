@@ -4,5 +4,7 @@
   "compatibility_date": "2025-09-01",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  // Necesario para las previews de cada PR (npx wrangler preview)
+  "previews": {}
 }
