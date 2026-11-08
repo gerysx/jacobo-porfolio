@@ -2,7 +2,6 @@ import { defineConfig } from "astro/config"
 import tailwind from "@astrojs/tailwind"
 
 export default defineConfig({
-  // Cambiar cuando tengamos el dominio definitivo
-  site: "https://jacobo-porfolio.vercel.app",
+  site: "https://jalvarezinvest.com",
   integrations: [tailwind({ applyBaseStyles: false })],
 })
