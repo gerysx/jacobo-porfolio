@@ -8,7 +8,7 @@
     "build": "npm run data && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "data": "node scripts/fetch-indices.mjs && node scripts/fetch-news.mjs"
+    "data": "node scripts/fetch-indices.mjs && node scripts/fetch-news.mjs && node scripts/fetch-stocks.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.5.6",
