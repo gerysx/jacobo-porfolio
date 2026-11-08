@@ -38,6 +38,12 @@ const uid = variant
       </div>
       {updated && <p class="text-[11px] text-muted">{updated}</p>}
     </div>
+    <div class="relative shrink-0 border-b border-line px-5 py-3">
+      <label for="rail-search" class="sr-only">Buscar empresa</label>
+      <svg class="pointer-events-none absolute left-8 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="rail-search" type="search" placeholder="Buscar empresa o ticker" class="w-full rounded-lg border border-line bg-paper py-2 pl-9 pr-3 text-[13px] text-ink outline-none transition placeholder:text-muted focus:border-accent" />
+      <ul data-rail-list role="listbox" class="absolute inset-x-3 top-full z-10 -mt-1 max-h-96 overflow-y-auto rounded-xl border border-line bg-card py-1 shadow-xl" hidden></ul>
+    </div>
     <div class="flex-1 overflow-y-auto overscroll-contain" data-lenis-prevent>
       {tabs.length > 0 && (
         <section class="px-5 pb-5 pt-4" data-stocks={uid}>
@@ -109,6 +115,22 @@ const uid = variant
 )}
 
 <script>
+  import { autocomplete } from "../lib/finder"
+
+  // Buscador del panel: abre la ficha en la sección de herramientas (o va a la portada si estamos en otra página)
+  const railInput = document.querySelector<HTMLInputElement>("#rail-search")
+  if (railInput) {
+    autocomplete(railInput, document.querySelector<HTMLElement>("[data-rail-list]")!, (h) => {
+      railInput.value = ""
+      if (!document.getElementById("herramientas")) return void (location.href = `/?s=${encodeURIComponent(h.symbol)}#herramientas`)
+      window.dispatchEvent(new CustomEvent("pick-symbol", { detail: h }))
+      const a = Object.assign(document.createElement("a"), { href: "#herramientas" })
+      document.body.append(a)
+      a.click()
+      a.remove()
+    })
+  }
+
   document.querySelectorAll<HTMLElement>("[data-stocks]").forEach((box) => {
     box.querySelectorAll<HTMLElement>("[data-tab]").forEach((tab) =>
       tab.addEventListener("click", () => {

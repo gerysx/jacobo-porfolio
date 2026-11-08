@@ -1,0 +1,230 @@
+---
+// Herramientas: buscador de cualquier cotizada y calculadora de "¿cuánto valdría hoy?".
+// Los datos llegan al momento desde la API del Worker de Cloudflare (worker/index.js).
+const suggestions = [
+  { symbol: "SAN.MC", name: "Banco Santander" },
+  { symbol: "ITX.MC", name: "Inditex" },
+  { symbol: "AAPL", name: "Apple" },
+  { symbol: "NVDA", name: "NVIDIA" },
+  { symbol: "^GSPC", name: "S&P 500" },
+]
+const today = new Date()
+const fiveYears = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate()).toISOString().slice(0, 10)
+const yesterday = new Date(today.getTime() - 86400000).toISOString().slice(0, 10)
+const input = "w-full rounded-lg border border-line bg-paper px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted focus:border-accent"
+const label = "mb-1.5 block text-xs font-semibold text-muted"
+const listCls = "absolute inset-x-0 top-full z-30 mt-1 max-h-80 overflow-y-auto rounded-xl border border-line bg-card py-1 shadow-xl"
+---
+
+<section id="herramientas" class="border-y border-line bg-card py-24 lg:py-28">
+  <div class="container-x">
+    <div class="mb-10 max-w-2xl">
+      <p class="eyebrow mb-4">Herramientas</p>
+      <h2 data-split class="h-section">Consulta cualquier empresa.</h2>
+      <p class="mt-4 text-lg text-muted">Busca una cotizada, un ETF o un índice, y calcula cuánto valdría hoy una inversión hecha en el pasado.</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Buscador -->
+      <div class="rounded-2xl border border-line bg-paper p-5 sm:p-7" data-quote>
+        <p class="mb-4 text-sm font-semibold text-ink">Buscador de cotizaciones</p>
+        <div class="relative">
+          <label for="q-search" class="sr-only">Buscar empresa</label>
+          <input id="q-search" type="search" placeholder="Empresa o ticker: Telefónica, MSFT, IBEX…" class={input.replace("bg-paper", "bg-card")} />
+          <ul data-list role="listbox" class={listCls} hidden></ul>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {suggestions.map((s) => (
+            <button type="button" data-pick={s.symbol} data-name={s.name} class="rounded-full border border-line px-2.5 py-1 text-xs text-muted transition hover:border-ink hover:text-ink">{s.name}</button>
+          ))}
+        </div>
+
+        <div data-q-empty class="mt-8 grid h-[260px] place-items-center rounded-xl border border-dashed border-line text-sm text-muted">
+          Elige una empresa para ver su cotización.
+        </div>
+        <div data-q-result hidden class="mt-6">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p data-q-name class="truncate text-lg font-semibold text-ink"></p>
+              <p data-q-meta class="text-xs text-muted"></p>
+            </div>
+            <div class="text-right tabular">
+              <p data-q-last class="text-2xl font-semibold tracking-tight text-ink"></p>
+              <p data-q-day class="text-sm font-medium"></p>
+            </div>
+          </div>
+          <svg data-q-svg viewBox="0 0 1000 300" preserveAspectRatio="none" class="mt-5 h-[170px] w-full" aria-hidden="true">
+            <defs><linearGradient id="qFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-opacity="0.2"></stop><stop offset="1" stop-opacity="0"></stop></linearGradient></defs>
+            <path data-area fill="url(#qFill)"></path>
+            <path data-line fill="none" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"></path>
+          </svg>
+          <div class="mt-3 flex items-center justify-between text-xs text-muted">
+            <p>Último año · <span data-q-year class="font-medium"></span></p>
+            <button type="button" data-q-calc class="font-semibold text-accent hover:underline">Calcular una inversión →</button>
+          </div>
+        </div>
+        <p data-q-error hidden class="mt-6 text-sm text-down"></p>
+      </div>
+
+      <!-- Calculadora -->
+      <form class="rounded-2xl border border-line bg-paper p-5 sm:p-7" data-calc novalidate>
+        <p class="mb-4 text-sm font-semibold text-ink">¿Cuánto valdría hoy?</p>
+        <div class="grid gap-3 sm:grid-cols-[1.4fr_1fr_1fr]">
+          <div class="relative sm:col-span-3">
+            <label for="c-symbol" class={label}>Empresa, ETF o índice</label>
+            <input id="c-symbol" type="search" placeholder="Busca por nombre o ticker" class={input.replace("bg-paper", "bg-card")} value="S&P 500" />
+            <ul data-list role="listbox" class={listCls} hidden></ul>
+          </div>
+          <div>
+            <label for="c-date" class={label}>Fecha de compra</label>
+            <input id="c-date" type="date" min="1980-01-01" max={yesterday} value={fiveYears} class={input.replace("bg-paper", "bg-card")} />
+          </div>
+          <div>
+            <label for="c-amount" class={label}>Importe invertido</label>
+            <input id="c-amount" type="number" inputmode="decimal" min="1" step="any" value="10000" class={input.replace("bg-paper", "bg-card")} />
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full rounded-lg bg-navy-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-700 disabled:opacity-60 dark:bg-white dark:text-navy-900">Calcular</button>
+          </div>
+        </div>
+
+        <div data-c-result hidden class="mt-6">
+          <p class="text-sm text-muted"><span data-c-intro></span></p>
+          <p data-c-value class="mt-1 text-4xl font-semibold tracking-[-0.03em] text-ink tabular"></p>
+          <div class="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line text-center tabular">
+            <div class="bg-card px-2 py-3"><p class="text-[11px] text-muted">Ganancia</p><p data-c-gain class="text-sm font-semibold"></p></div>
+            <div class="bg-card px-2 py-3"><p class="text-[11px] text-muted">Rentabilidad</p><p data-c-pct class="text-sm font-semibold"></p></div>
+            <div class="bg-card px-2 py-3"><p class="text-[11px] text-muted">Al año</p><p data-c-cagr class="text-sm font-semibold text-ink"></p></div>
+          </div>
+          <svg data-c-svg viewBox="0 0 1000 300" preserveAspectRatio="none" class="mt-5 h-[120px] w-full" aria-hidden="true">
+            <defs><linearGradient id="cFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-opacity="0.2"></stop><stop offset="1" stop-opacity="0"></stop></linearGradient></defs>
+            <path data-area fill="url(#cFill)"></path>
+            <path data-line fill="none" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"></path>
+          </svg>
+          <p data-c-note class="mt-3 text-xs leading-relaxed text-muted"></p>
+        </div>
+        <p data-c-error hidden class="mt-6 text-sm text-down"></p>
+        <p class="mt-6 text-[11px] leading-relaxed text-muted">Cálculo orientativo con datos de Yahoo Finance, en la divisa de cotización y sin comisiones ni impuestos. Rentabilidades pasadas no garantizan rentabilidades futuras.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { api, autocomplete, drawChart, money, sign, type Hit } from "../lib/finder"
+
+  type Quote = { symbol: string; name: string; currency: string; exchange: string; last: number; day: number | null; year: number; series: [string, number][] }
+  type Calc = { symbol: string; name: string; currency: string; from: string; to: string; amount: number; value: number; totalPct: number; pricePct: number; valuePriceOnly: number; cagr: number | null; series: [string, number][] }
+
+  const $ = <T extends Element = HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T
+  const tone = (el: HTMLElement, n: number) => {
+    el.classList.toggle("text-up", n >= 0)
+    el.classList.toggle("text-down", n < 0)
+  }
+  const dateEs = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+
+  // ---- Buscador ----
+  const qBox = document.querySelector<HTMLElement>("[data-quote]")!
+  const calcForm = document.querySelector<HTMLFormElement>("[data-calc]")!
+  let current: Hit | null = null
+  let calcSymbol: Hit | null = { symbol: "^GSPC", name: "S&P 500", exchange: "", type: "INDEX" }
+
+  async function showQuote(h: Hit) {
+    current = h
+    const err = $(qBox, "[data-q-error]")
+    err.hidden = true
+    $(qBox, "[data-q-empty]").textContent = "Cargando…"
+    try {
+      const q = await api<Quote>(`/api/quote?symbol=${encodeURIComponent(h.symbol)}`)
+      $(qBox, "[data-q-empty]").hidden = true
+      $(qBox, "[data-q-result]").hidden = false
+      $(qBox, "[data-q-name]").textContent = q.name
+      $(qBox, "[data-q-meta]").textContent = [q.symbol, q.exchange, q.currency].filter(Boolean).join(" · ")
+      $(qBox, "[data-q-last]").textContent = money(q.last, q.currency)
+      const day = $(qBox, "[data-q-day]")
+      day.textContent = q.day == null ? "" : `${sign(q.day)} hoy`
+      if (q.day != null) tone(day, q.day)
+      const year = $(qBox, "[data-q-year]")
+      year.textContent = sign(q.year)
+      tone(year, q.year)
+      drawChart($<SVGSVGElement>(qBox, "[data-q-svg]"), q.series, q.year >= 0)
+    } catch (e) {
+      $(qBox, "[data-q-empty]").hidden = false
+      $(qBox, "[data-q-empty]").textContent = "Elige una empresa para ver su cotización."
+      $(qBox, "[data-q-result]").hidden = true
+      err.hidden = false
+      err.textContent = `No se ha podido cargar ${h.name}. ${(e as Error).message}`
+    }
+  }
+
+  const qInput = $<HTMLInputElement>(qBox, "#q-search")
+  autocomplete(qInput, $(qBox, "[data-list]"), showQuote)
+  qBox.querySelectorAll<HTMLElement>("[data-pick]").forEach((b) =>
+    b.addEventListener("click", () => {
+      qInput.value = b.dataset.name!
+      showQuote({ symbol: b.dataset.pick!, name: b.dataset.name!, exchange: "", type: "" })
+    }),
+  )
+  $(qBox, "[data-q-calc]").addEventListener("click", () => {
+    if (!current) return
+    calcSymbol = current
+    $<HTMLInputElement>(calcForm, "#c-symbol").value = current.name
+    calcForm.requestSubmit()
+  })
+
+  // Selección desde el panel lateral u otras páginas (?s=SÍMBOLO)
+  window.addEventListener("pick-symbol", (e) => {
+    const h = (e as CustomEvent<Hit>).detail
+    qInput.value = h.name
+    showQuote(h)
+  })
+  const fromUrl = new URLSearchParams(location.search).get("s")
+  if (fromUrl) {
+    qInput.value = fromUrl
+    showQuote({ symbol: fromUrl, name: fromUrl, exchange: "", type: "" })
+  }
+
+  // ---- Calculadora ----
+  const cInput = $<HTMLInputElement>(calcForm, "#c-symbol")
+  autocomplete(cInput, $(calcForm, "[data-list]"), (h) => (calcSymbol = h))
+  cInput.addEventListener("input", () => (calcSymbol = null))
+
+  calcForm.addEventListener("submit", async (ev) => {
+    ev.preventDefault()
+    const err = $(calcForm, "[data-c-error]")
+    const out = $(calcForm, "[data-c-result]")
+    const btn = $<HTMLButtonElement>(calcForm, "button[type=submit]")
+    const date = $<HTMLInputElement>(calcForm, "#c-date").value
+    const amount = Number($<HTMLInputElement>(calcForm, "#c-amount").value)
+    err.hidden = true
+    if (!calcSymbol) return ((err.hidden = false), (err.textContent = "Elige una empresa de la lista."))
+    if (!date) return ((err.hidden = false), (err.textContent = "Indica una fecha."))
+    if (!(amount > 0)) return ((err.hidden = false), (err.textContent = "Indica un importe mayor que cero."))
+    btn.disabled = true
+    btn.textContent = "Calculando…"
+    try {
+      const c = await api<Calc>(`/api/calc?symbol=${encodeURIComponent(calcSymbol.symbol)}&date=${date}&amount=${amount}`)
+      out.hidden = false
+      $(calcForm, "[data-c-intro]").textContent = `${money(c.amount, c.currency, 0)} en ${c.name} el ${dateEs(c.from)} valdrían hoy`
+      $(calcForm, "[data-c-value]").textContent = money(c.value, c.currency)
+      const gain = $(calcForm, "[data-c-gain]")
+      gain.textContent = `${c.value >= c.amount ? "+" : "−"}${money(Math.abs(c.value - c.amount), c.currency, 0)}`
+      tone(gain, c.value - c.amount)
+      const p = $(calcForm, "[data-c-pct]")
+      p.textContent = sign(c.totalPct)
+      tone(p, c.totalPct)
+      $(calcForm, "[data-c-cagr]").textContent = c.cagr == null ? "—" : sign(c.cagr)
+      $(calcForm, "[data-c-note]").textContent =
+        `Con dividendos reinvertidos. Solo por precio, sin dividendos: ${money(c.valuePriceOnly, c.currency)} (${sign(c.pricePct)}). Precio de compra tomado del ${dateEs(c.from)}; último dato del ${dateEs(c.to)}.`
+      drawChart($<SVGSVGElement>(calcForm, "[data-c-svg]"), c.series, c.value >= c.amount)
+    } catch (e) {
+      out.hidden = true
+      err.hidden = false
+      err.textContent = `No se ha podido calcular. ${(e as Error).message}`
+    } finally {
+      btn.disabled = false
+      btn.textContent = "Calcular"
+    }
+  })
+
+</script>

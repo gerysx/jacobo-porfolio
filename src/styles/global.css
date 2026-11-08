@@ -81,3 +81,8 @@ html.motion .reveal {
 .split-word {
   display: inline-block;
 }
+
+/* El atributo hidden gana a las clases de display (grid, flex…) */
+[hidden] {
+  display: none !important;
+}
