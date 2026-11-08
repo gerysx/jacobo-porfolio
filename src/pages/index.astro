@@ -8,17 +8,22 @@ import News from "../components/News.astro"
 import Career from "../components/Career.astro"
 import Contact from "../components/Contact.astro"
 import Footer from "../components/Footer.astro"
+import MarketRail from "../components/MarketRail.astro"
 ---
 
 <Layout>
   <Header />
+  <MarketRail />
+  <div class="xl:pl-[300px]">
   <main>
     <Hero />
     <About />
     <Markets />
+    <MarketRail variant="section" />
     <News />
     <Career />
     <Contact />
   </main>
   <Footer />
+  </div>
 </Layout>

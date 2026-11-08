@@ -3,13 +3,17 @@ import Layout from "../layouts/Layout.astro"
 import Header from "../components/Header.astro"
 import News from "../components/News.astro"
 import Footer from "../components/Footer.astro"
+import MarketRail from "../components/MarketRail.astro"
 import { PROFILE } from "../data/profile"
 ---
 
 <Layout title={`Noticias de mercados · ${PROFILE.name}`} description="Titulares de la prensa económica sobre bolsa y mercados, actualizados varias veces al día.">
   <Header base="/" />
+  <MarketRail />
+  <div class="xl:pl-[300px]">
   <main>
     <News full limit={30} />
   </main>
   <Footer />
+  </div>
 </Layout>
