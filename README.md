@@ -17,4 +17,4 @@ npm run dev
 
 ## Despliegue
 
-Vercel (importar el repositorio, framework Astro, sin configuración extra).
+Cloudflare (Workers & Pages conectado a GitHub): build `npm run build`, deploy `npx wrangler deploy` (usa `wrangler.jsonc`). Cada push a `main`, incluidos los de la Action de datos, publica la web.
