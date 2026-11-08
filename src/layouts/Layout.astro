@@ -27,7 +27,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#0f2a2a" />
+    <meta name="theme-color" content="#0b1d36" />
     <script is:inline>
       ;(() => {
         const d = document.documentElement
@@ -49,7 +49,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
       })}
     />
   </head>
-  <body class="grain min-h-screen overflow-x-hidden">
+  <body class="min-h-screen overflow-x-hidden">
     <slot />
     <script>
       import { initMotion } from "../lib/motion"

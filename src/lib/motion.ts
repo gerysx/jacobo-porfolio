@@ -26,23 +26,7 @@ function smoothScroll() {
 }
 
 function hero() {
-  const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
-  tl.fromTo("[data-hero-item]", { y: 28, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1 })
-
-  // La línea del gráfico se "dibuja" y el área aparece debajo
-  const path = document.querySelector<SVGPathElement>("[data-chart-line]")
-  if (path) {
-    const len = path.getTotalLength()
-    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len })
-    tl.to(path, { strokeDashoffset: 0, duration: 2.2, ease: "power2.inOut" }, 0.2)
-    tl.fromTo("[data-chart-area]", { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2 }, 1.4)
-    tl.fromTo("[data-chart-dot]", { scale: 0, transformOrigin: "center" }, { scale: 1, duration: 0.5, ease: "back.out(3)" }, 2.2)
-  }
-  gsap.to("[data-chart]", {
-    yPercent: 14,
-    ease: "none",
-    scrollTrigger: { trigger: "#inicio", start: "top top", end: "bottom top", scrub: true },
-  })
+  gsap.fromTo("[data-hero-item]", { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.09, ease: "power3.out" })
 }
 
 function reveals() {
@@ -105,20 +89,10 @@ function timeline() {
 function marquee() {
   const track = document.querySelector("[data-marquee]")
   if (!track) return
-  gsap.to(track, { xPercent: -50, duration: 40, ease: "none", repeat: -1 })
-}
-
-function header() {
-  const h = document.querySelector("[data-header]")
-  if (!h) return
-  ScrollTrigger.create({
-    start: 40,
-    onUpdate: (s) => h.classList.toggle("is-scrolled", s.scroll() > 40),
-  })
+  gsap.to(track, { xPercent: -50, duration: 45, ease: "none", repeat: -1 })
 }
 
 export function initMotion() {
-  header()
   if (reduced()) return
   smoothScroll()
   hero()

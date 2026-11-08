@@ -1,29 +1,36 @@
 @import "@fontsource-variable/geist";
-@import "@fontsource-variable/fraunces";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Paleta: verde pino profundo + oro apagado, sobria y de confianza */
+/* Paleta a juego con su imagen: azul marino del traje, blanco de la camisa y un dorado discreto */
 :root {
-  --paper: 247 245 239;
+  --paper: 247 249 252;
   --card: 255 255 255;
-  --ink: 16 32 32;
-  --muted: 88 102 100;
-  --line: 222 218 206;
-  --gold: 168 128 56;
-  --pine: 18 58 54;
+  --ink: 11 29 54;
+  --muted: 84 99 122;
+  --line: 222 228 237;
+  --brand: 18 41 74; /* azul marino */
+  --brand-fg: 255 255 255;
+  --accent: 37 89 160; /* azul acero para enlaces y detalles */
+  --gold: 176 141 87;
+  --up: 16 128 90;
+  --down: 196 56 56;
   color-scheme: light;
 }
 .dark {
-  --paper: 10 20 20;
-  --card: 16 30 30;
-  --ink: 236 233 224;
-  --muted: 150 164 160;
-  --line: 38 56 54;
-  --gold: 214 176 104;
-  --pine: 120 190 170;
+  --paper: 6 15 28;
+  --card: 11 25 45;
+  --ink: 232 237 245;
+  --muted: 148 163 186;
+  --line: 29 46 72;
+  --brand: 120 165 230;
+  --brand-fg: 6 15 28;
+  --accent: 132 176 240;
+  --gold: 214 182 124;
+  --up: 52 199 140;
+  --down: 240 110 110;
   color-scheme: dark;
 }
 
@@ -35,26 +42,27 @@ html {
 body {
   @apply font-sans;
   background: rgb(var(--paper));
+  font-feature-settings: "ss01", "cv11";
 }
 ::selection {
-  background: rgb(var(--gold) / 0.3);
+  background: rgb(var(--accent) / 0.25);
 }
 
 .container-x {
   @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
 }
 .eyebrow {
-  @apply text-xs font-medium uppercase tracking-[0.2em] text-gold;
+  @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
 }
-.h-display {
-  @apply font-serif font-light tracking-tight;
-  font-variation-settings: "SOFT" 50, "opsz" 144;
-}
-.italic-gold {
-  @apply italic text-gold;
+.h-section {
+  @apply text-3xl font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[2.6rem];
+  text-wrap: balance;
 }
 .card {
   @apply rounded-2xl border border-line bg-card;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Lenis */
@@ -66,25 +74,10 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
-/* Si hay JS y movimiento, los elementos .reveal empiezan ocultos (GSAP los muestra) */
+/* Con JS y movimiento, .reveal empieza oculto y GSAP lo muestra */
 html.motion .reveal {
   visibility: hidden;
 }
 .split-word {
   display: inline-block;
-}
-
-/* Grano sutil de fondo */
-.grain::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 60;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-input[type="range"] {
-  accent-color: rgb(var(--gold));
 }
