@@ -8,7 +8,7 @@ export const PROFILE = {
   tagline: "Carteras affluent y asesoramiento de inversión",
   location: "Madrid",
   email: "jacoalv97@gmail.com",
-  linkedin: "https://www.linkedin.com/in/jacoboalvarez",
+  linkedin: "https://www.linkedin.com/in/jacobo-alvarez/",
   languages: ["Español nativo", "Inglés profesional (B2)"],
   summary: [
     "Gestiono una cartera de clientes affluent en banca personal, con patrimonios superiores a 100.000 €. Antes asesoré a clientes de rentas altas durante casi tres años.",

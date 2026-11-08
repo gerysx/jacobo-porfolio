@@ -1,5 +1,6 @@
 ---
 import { PROFILE } from "../data/profile"
+import photo from "../assets/jacobo.jpg"
 
 const links = [
   { href: "#enfoque", label: "Enfoque" },
@@ -12,7 +13,7 @@ const links = [
 <header data-header class="fixed inset-x-0 top-0 z-50 transition-all duration-300 [&.is-scrolled]:border-b [&.is-scrolled]:border-line [&.is-scrolled]:bg-paper/80 [&.is-scrolled]:backdrop-blur-md">
   <nav class="container-x flex h-16 items-center justify-between gap-4">
     <a href="#inicio" class="flex items-center gap-2.5 font-medium">
-      <span class="grid h-8 w-8 place-items-center rounded-full bg-pine font-serif text-sm text-paper dark:bg-gold dark:text-paper">{PROFILE.initials}</span>
+      <img src={photo.src} alt="" width="32" height="32" class="h-8 w-8 rounded-full object-cover object-top ring-2 ring-gold/40" />
       <span class="hidden sm:inline">{PROFILE.name}</span>
     </a>
     <ul class="hidden items-center gap-7 text-sm text-muted md:flex">

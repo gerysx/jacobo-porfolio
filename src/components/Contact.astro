@@ -1,9 +1,8 @@
 ---
 import { PROFILE } from "../data/profile"
 
-// Con clave de Web3Forms los mensajes llegan por email sin servidor propio.
-// Sin clave, el formulario abre el correo del visitante con el mensaje ya escrito.
-const key = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? ""
+// El formulario prepara el email con los datos y lo abre en el correo del visitante,
+// con Jacobo como destinatario. Sin servidores ni claves.
 ---
 
 <section id="contacto" class="relative overflow-hidden py-24 lg:py-32">
@@ -41,7 +40,7 @@ const key = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? ""
       </ul>
     </div>
 
-    <form id="contact-form" data-key={key} data-email={PROFILE.email} class="reveal card space-y-5 p-6 shadow-[0_30px_80px_-40px_rgb(var(--pine)/0.4)] sm:p-9" novalidate>
+    <form id="contact-form" data-email={PROFILE.email} class="reveal card space-y-5 p-6 shadow-[0_30px_80px_-40px_rgb(var(--pine)/0.4)] sm:p-9" novalidate>
       <div class="grid gap-5 sm:grid-cols-2">
         <label class="block">
           <span class="mb-1.5 block text-sm font-medium">Nombre *</span>
@@ -88,7 +87,7 @@ const key = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? ""
         <span>Acepto que mis datos se usen solo para responder a esta consulta. No se cederán a terceros.</span>
       </label>
       <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-full bg-pine px-6 py-4 font-medium text-paper transition hover:bg-gold disabled:opacity-60 dark:bg-gold dark:hover:bg-ink">
-        <span data-label>Enviar mensaje</span>
+        <span>Enviar por email</span>
         <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
       <p data-status role="status" class="min-h-[1.25rem] text-center text-sm"></p>
@@ -106,14 +105,7 @@ const key = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? ""
   const form = document.getElementById("contact-form") as HTMLFormElement | null
   if (form) {
     const status = form.querySelector<HTMLElement>("[data-status]")!
-    const label = form.querySelector<HTMLElement>("[data-label]")!
-    const button = form.querySelector<HTMLButtonElement>("button[type=submit]")!
-    const say = (text: string, ok: boolean) => {
-      status.textContent = text
-      status.style.color = ok ? "rgb(var(--pine))" : "rgb(220 70 70)"
-    }
-
-    form.addEventListener("submit", async (ev) => {
+    form.addEventListener("submit", (ev) => {
       ev.preventDefault()
       if (!form.checkValidity()) {
         form.reportValidity()
@@ -121,32 +113,19 @@ const key = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? ""
       }
       const data = Object.fromEntries(new FormData(form)) as Record<string, string>
       if (data.botcheck) return
-      const key = form.dataset.key
-
-      if (!key) {
-        const body = `${data.mensaje}\n\nNombre: ${data.nombre}\nEmail: ${data.email}\nTeléfono: ${data.telefono || "-"}\nInterés: ${data.interes}\nPatrimonio: ${data.patrimonio}`
-        location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent("Contacto desde la web: " + data.interes)}&body=${encodeURIComponent(body)}`
-        return
-      }
-
-      button.disabled = true
-      label.textContent = "Enviando…"
-      try {
-        const res = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ ...data, access_key: key, subject: `Nuevo contacto web: ${data.interes}`, from_name: "Web Jacobo Álvarez" }),
-        })
-        const json = await res.json()
-        if (!json.success) throw new Error(json.message)
-        form.reset()
-        say("¡Gracias! He recibido tu mensaje y te responderé muy pronto.", true)
-      } catch {
-        say("No se ha podido enviar. Escríbeme directamente por email.", false)
-      } finally {
-        button.disabled = false
-        label.textContent = "Enviar mensaje"
-      }
+      const body = [
+        data.mensaje,
+        "",
+        `Nombre: ${data.nombre}`,
+        `Email: ${data.email}`,
+        `Teléfono: ${data.telefono || "-"}`,
+        `Interés: ${data.interes}`,
+        `Patrimonio aproximado: ${data.patrimonio}`,
+      ].join("\n")
+      const subject = `Contacto web: ${data.interes} · ${data.nombre}`
+      location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      status.textContent = "Se ha abierto tu correo con el mensaje preparado. Solo tienes que enviarlo."
+      status.style.color = "rgb(var(--pine))"
     })
   }
 </script>
