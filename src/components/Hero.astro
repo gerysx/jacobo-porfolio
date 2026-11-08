@@ -1,0 +1,76 @@
+---
+import { PROFILE } from "../data/profile"
+import photo from "../assets/jacobo-cut.webp"
+import { quotes, fmt, pct, marketsUpdated } from "../lib/markets"
+
+const updated = marketsUpdated
+  ? new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short" }).format(new Date(marketsUpdated))
+  : null
+---
+
+<section id="inicio" data-dark class="relative overflow-hidden bg-navy-900 pb-20 pt-40 text-white sm:pt-44 lg:pb-28">
+  <!-- Fondo: degradado y retícula fina -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+    <div class="absolute inset-0 bg-[radial-gradient(80%_60%_at_85%_0%,#1b3a66_0%,transparent_60%),radial-gradient(60%_50%_at_0%_100%,#12294a_0%,transparent_70%)]"></div>
+    <div class="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:56px_56px] [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
+  </div>
+
+  <div class="container-x relative grid items-center gap-14 lg:grid-cols-[1.35fr_1fr]">
+    <div>
+      <div data-hero-item class="flex items-center gap-4">
+        <div class="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-gradient-to-b from-[#2a4f86] to-[#0b1d36] ring-2 ring-gold/70 ring-offset-4 ring-offset-navy-900 sm:h-28 sm:w-28">
+          <img src={photo.src} width={photo.width} height={photo.height} alt={`Retrato de ${PROFILE.name}`} class="absolute inset-x-0 top-1 h-[115%] w-full object-cover object-top" fetchpriority="high" />
+        </div>
+        <div>
+          <p class="text-lg font-semibold">{PROFILE.name}</p>
+          <p class="text-sm text-white/65">{PROFILE.tagline.split(" · ")[0]} · {PROFILE.location}</p>
+          <p class="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-2.5 py-0.5 text-[11px] font-medium text-gold">European Financial Advisor · EFA</p>
+        </div>
+      </div>
+
+      <h1 data-hero-item class="mt-10 text-[2.6rem] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-6xl">
+        Banca personal con <span class="text-gold">visión de inversor</span>.
+      </h1>
+      <p data-hero-item class="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
+        Más de tres años en banca personal y patrimonial: análisis de mercados, propuestas de inversión por perfil de riesgo y seguimiento de carteras en arquitectura abierta.
+      </p>
+      <div data-hero-item class="mt-9 flex flex-wrap gap-3">
+        <a href="#contacto" class="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-navy-900 transition hover:bg-gold">
+          Contactar
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href={PROFILE.linkedin} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/60">
+          LinkedIn
+        </a>
+        <a href="/CV_Jacobo_Alvarez.pdf" download class="inline-flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold text-white/75 transition hover:text-white">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M6 11l6 6 6-6M5 21h14"/></svg>
+          Descargar CV
+        </a>
+      </div>
+    </div>
+
+    {quotes.length > 0 && (
+      <div data-hero-item class="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm sm:p-6">
+        <div class="mb-4 flex items-center justify-between">
+          <p class="text-sm font-semibold">Mercados</p>
+          <p class="text-xs text-white/50">{updated ? `Cierre · ${updated}` : "Último cierre"}</p>
+        </div>
+        <ul class="divide-y divide-white/10 tabular">
+          {quotes.map((q) => (
+            <li class="flex items-center justify-between gap-4 py-3">
+              <div>
+                <p class="text-sm font-medium">{q.name}</p>
+                <p class="text-xs text-white/45">{q.region}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm">{fmt(q.last, 2)}</p>
+                <p class:list={["text-xs font-medium", q.day >= 0 ? "text-emerald-400" : "text-rose-400"]}>{pct(q.day)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <a href="#mercados" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-gold hover:underline">Ver gráficos →</a>
+      </div>
+    )}
+  </div>
+</section>

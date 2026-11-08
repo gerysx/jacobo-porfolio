@@ -1,0 +1,76 @@
+---
+import { news, newsUpdated, timeAgo } from "../lib/markets"
+
+interface Props {
+  limit?: number
+  full?: boolean
+}
+const { limit = 7, full = false } = Astro.props
+const now = newsUpdated ? new Date(newsUpdated) : new Date()
+const items = news.slice(0, limit)
+const [lead, ...rest] = items
+const time = (iso: string) => new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso))
+---
+
+<section id="noticias" class:list={["border-y border-line bg-card", full ? "pb-24 pt-36" : "py-24 lg:py-28"]}>
+  <div class="container-x">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <p class="eyebrow mb-4">Noticias</p>
+        {full ? <h1 class="h-section">Actualidad de los mercados</h1> : <h2 data-split class="h-section">Actualidad de los mercados.</h2>}
+        <p class="mt-4 text-lg text-muted">Titulares de la prensa económica, recogidos automáticamente varias veces al día. Cada noticia enlaza a su fuente original.</p>
+      </div>
+      {!full && news.length > limit && (
+        <a href="/noticias" class="inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink">Ver todas →</a>
+      )}
+    </div>
+
+    {!lead ? (
+      <div class="rounded-2xl border border-line bg-paper p-12 text-center text-muted">
+        <p>Las noticias se están actualizando. Vuelve en un rato.</p>
+      </div>
+    ) : full ? (
+      <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-paper">
+        {items.map((n) => (
+          <li>
+            <a href={n.link} target="_blank" rel="noopener" class="group flex flex-col gap-1 p-5 transition-colors hover:bg-card sm:flex-row sm:items-baseline sm:gap-6">
+              <span class="w-40 shrink-0 text-xs text-muted tabular">{time(n.date)}</span>
+              <span class="flex-1 font-medium text-ink group-hover:text-accent">{n.title}</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-accent">{n.source}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="grid gap-4 lg:grid-cols-[1.1fr_1.4fr]">
+        <a href={lead.link} target="_blank" rel="noopener" class="reveal group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-navy-900 p-7 text-white sm:p-9">
+          <div aria-hidden="true" class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#2a4f86]/60 blur-3xl"></div>
+          <div class="relative">
+            <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold">
+              <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-gold"></span> Última hora · {lead.source}
+            </p>
+            <p class="mt-5 text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{lead.title}</p>
+          </div>
+          <p class="relative mt-10 flex items-center justify-between text-sm text-white/60">
+            <span>{timeAgo(lead.date, now)}</span>
+            <span class="font-medium text-white transition group-hover:translate-x-1">Leer en {lead.source} →</span>
+          </p>
+        </a>
+        <ul class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-paper">
+          {rest.map((n) => (
+            <li class="reveal">
+              <a href={n.link} target="_blank" rel="noopener" class="group block p-5 transition-colors hover:bg-card">
+                <p class="flex items-center gap-2 text-xs text-muted">
+                  <span class="font-semibold uppercase tracking-wider text-accent">{n.source}</span>
+                  <span>·</span>
+                  <span>{timeAgo(n.date, now)}</span>
+                </p>
+                <p class="mt-1.5 font-medium leading-snug text-ink group-hover:text-accent">{n.title}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>

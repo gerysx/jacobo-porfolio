@@ -1,0 +1,8 @@
+// Despliegue en Cloudflare (Workers con assets estáticos): sirve la carpeta dist que genera `npm run build`.
+{
+  "name": "jacobo-porfolio",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}

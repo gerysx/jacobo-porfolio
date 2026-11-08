@@ -1,0 +1,41 @@
+name: Actualizar mercados y noticias
+
+on:
+  schedule:
+    # Laborables, cada 3 horas entre las 7:00 y las 22:00 (hora peninsular aprox.)
+    - cron: "0 6,9,12,15,18,21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --omit=dev --ignore-scripts
+      - run: npm run data
+      - name: Guardar cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898599+github-actions[bot]@users.noreply.github.com"
+          git add src/data/indices.json src/data/news.json
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "Actualizar datos de mercado y noticias"
+          git pull --rebase origin main
+          git push
+      # Si Vercel no despliega los commits del bot, se puede añadir un Deploy Hook como secreto
+      - name: Avisar a Vercel
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        if: env.HOOK != ''
+        run: curl -fsS -X POST "$HOOK" > /dev/null

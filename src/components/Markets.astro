@@ -1,0 +1,246 @@
+---
+import { indices, marketsUpdated, fmt, yearChange, sparkPath } from "../lib/markets"
+
+const updated = marketsUpdated
+  ? new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "long", year: "numeric" }).format(new Date(marketsUpdated))
+  : null
+const cards = indices.map((i) => ({ ...i, last: i.series[i.series.length - 1][1], change: yearChange(i.series), spark: sparkPath(i.series) }))
+const ranges = [
+  { id: "1m", label: "1M" },
+  { id: "6m", label: "6M" },
+  { id: "ytd", label: "YTD" },
+  { id: "1y", label: "1A" },
+  { id: "5y", label: "5A" },
+]
+---
+
+<section id="mercados" class="py-24 lg:py-28">
+  <div class="container-x">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <p class="eyebrow mb-4">Mercados</p>
+        <h2 data-split class="h-section">Los principales índices del mundo.</h2>
+        <p class="mt-4 text-lg text-muted">Evolución de las grandes bolsas, actualizada a diario. Información de contexto, no una recomendación.</p>
+      </div>
+      {updated && <p class="text-sm text-muted">Datos al cierre del {updated}</p>}
+    </div>
+
+    {indices.length === 0 ? (
+      <div class="card grid place-items-center p-16 text-center text-muted">
+        <p>Los datos de mercado se están actualizando. Vuelve en un rato.</p>
+      </div>
+    ) : (
+      <>
+        <script type="application/json" id="indices-data" set:html={JSON.stringify(indices)} />
+        <div class="reveal card p-5 sm:p-7">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div role="tablist" aria-label="Índice" class="-mx-1 flex max-w-full gap-1 overflow-x-auto px-1 pb-1">
+              {indices.map((i, n) => (
+                <button role="tab" data-index={i.id} aria-selected={n === 0 ? "true" : "false"} class="whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium text-muted transition hover:text-ink aria-selected:bg-navy-900 aria-selected:text-white dark:aria-selected:bg-white dark:aria-selected:text-navy-900">
+                  {i.name}
+                </button>
+              ))}
+            </div>
+            <div class="flex gap-1 rounded-lg border border-line p-1" aria-label="Periodo">
+              {ranges.map((r) => (
+                <button data-range={r.id} aria-pressed={r.id === "1y" ? "true" : "false"} class="rounded-md px-3 py-1.5 text-xs font-semibold text-muted transition hover:text-ink aria-pressed:bg-paper aria-pressed:text-ink aria-pressed:shadow-sm">
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div class="mt-7 flex flex-wrap items-end gap-x-5 gap-y-2">
+            <div>
+              <p data-m-region class="text-sm text-muted"></p>
+              <p data-m-value class="text-4xl font-semibold tracking-[-0.03em] tabular sm:text-5xl"></p>
+            </div>
+            <p data-m-change class="mb-1.5 rounded-md px-2.5 py-1 text-sm font-semibold tabular"></p>
+            <p data-m-hover class="mb-1.5 ml-auto text-sm text-muted tabular"></p>
+          </div>
+
+          <div class="relative mt-6">
+            <svg data-m-svg viewBox="0 0 1000 360" preserveAspectRatio="none" class="h-[240px] w-full touch-none sm:h-[340px]" role="img" aria-label="Gráfico del índice seleccionado">
+              <defs>
+                <linearGradient id="mFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop data-m-stop offset="0" stop-opacity="0.22"></stop>
+                  <stop data-m-stop offset="1" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <g data-m-grid></g>
+              <path data-m-area fill="url(#mFill)"></path>
+              <path data-m-line fill="none" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"></path>
+              <line data-m-cross y1="0" y2="360" stroke="rgb(var(--muted))" stroke-dasharray="3 4" vector-effect="non-scaling-stroke" opacity="0"></line>
+            </svg>
+            <span data-m-dot class="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card opacity-0"></span>
+            <div data-m-labels class="pointer-events-none absolute inset-y-0 right-0 flex flex-col justify-between py-1 text-right text-[11px] text-muted tabular"></div>
+          </div>
+          <div data-m-dates class="mt-2 flex justify-between text-xs text-muted tabular"></div>
+        </div>
+
+        <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {cards.map((c) => (
+            <li class="reveal">
+              <button data-card={c.id} class="card flex w-full items-center justify-between gap-4 p-5 text-left transition hover:border-accent/50">
+                <div>
+                  <p class="font-semibold text-ink">{c.name}</p>
+                  <p class="text-xs text-muted">{c.region}</p>
+                  <p class="mt-3 text-lg tabular">{fmt(c.last)}</p>
+                  <p class:list={["text-sm font-medium tabular", c.change >= 0 ? "text-up" : "text-down"]}>
+                    {c.change >= 0 ? "+" : "−"}{fmt(Math.abs(c.change), 1)} % <span class="font-normal text-muted">a 1 año</span>
+                  </p>
+                </div>
+                <svg viewBox="0 0 120 36" class="h-11 w-32 shrink-0" aria-hidden="true">
+                  <path d={c.spark} fill="none" stroke-width="1.75" stroke-linejoin="round" class={c.change >= 0 ? "stroke-up" : "stroke-down"}></path>
+                </svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-5 text-xs text-muted">Fuente: Yahoo Finance. Datos diarios al cierre, con fines informativos. Rentabilidades pasadas no garantizan rentabilidades futuras.</p>
+      </>
+    )}
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap"
+
+  type Point = [string, number]
+  type Index = { id: string; name: string; region: string; series: Point[] }
+
+  const el = document.getElementById("indices-data")
+  if (el) {
+    const indices: Index[] = JSON.parse(el.textContent || "[]")
+    const $ = <T extends Element>(s: string) => document.querySelector<T>(s)!
+    const svg = $<SVGSVGElement>("[data-m-svg]")
+    const line = $<SVGPathElement>("[data-m-line]")
+    const area = $<SVGPathElement>("[data-m-area]")
+    const cross = $<SVGLineElement>("[data-m-cross]")
+    const grid = $<SVGGElement>("[data-m-grid]")
+    const dot = $<HTMLElement>("[data-m-dot]")
+    const labels = $<HTMLElement>("[data-m-labels]")
+    const dates = $<HTMLElement>("[data-m-dates]")
+    const valueEl = $<HTMLElement>("[data-m-value]")
+    const changeEl = $<HTMLElement>("[data-m-change]")
+    const regionEl = $<HTMLElement>("[data-m-region]")
+    const hoverEl = $<HTMLElement>("[data-m-hover]")
+    const W = 1000
+    const H = 360
+    const PAD = 20
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    let current = indices[0].id
+    let range = "1y"
+    let pts: Point[] = []
+    let xs: number[] = []
+    let ys: number[] = []
+
+    const num = (n: number, d = 2) => n.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d })
+    const dateFmt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", year: "numeric" })
+    const color = (up: boolean) => (up ? "rgb(var(--up))" : "rgb(var(--down))")
+
+    function slice(series: Point[]) {
+      const last = new Date(series[series.length - 1][0])
+      const from = new Date(last)
+      if (range === "1m") from.setMonth(from.getMonth() - 1)
+      if (range === "6m") from.setMonth(from.getMonth() - 6)
+      if (range === "1y") from.setFullYear(from.getFullYear() - 1)
+      if (range === "5y") from.setFullYear(from.getFullYear() - 5)
+      if (range === "ytd") from.setMonth(0, 1)
+      const out = series.filter(([d]) => new Date(d) >= from)
+      return out.length > 1 ? out : series
+    }
+
+    function draw(animate = true) {
+      const idx = indices.find((i) => i.id === current)!
+      pts = slice(idx.series)
+      const vals = pts.map((p) => p[1])
+      const min = Math.min(...vals)
+      const max = Math.max(...vals)
+      const span = max - min || 1
+      xs = pts.map((_, i) => (i / (pts.length - 1)) * W)
+      ys = vals.map((v) => PAD + (1 - (v - min) / span) * (H - PAD * 2))
+      const d = xs.map((x, i) => `${i ? "L" : "M"}${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(" ")
+      const up = vals[vals.length - 1] >= vals[0]
+      const c = color(up)
+
+      line.setAttribute("d", d)
+      line.setAttribute("stroke", c)
+      area.setAttribute("d", `${d} L${W} ${H} L0 ${H} Z`)
+      document.querySelectorAll("[data-m-stop]").forEach((s) => s.setAttribute("stop-color", c))
+      dot.style.background = c
+
+      grid.innerHTML = [0.25, 0.5, 0.75]
+        .map((f) => `<line x1="0" x2="${W}" y1="${H * f}" y2="${H * f}" stroke="rgb(var(--line))" vector-effect="non-scaling-stroke"/>`)
+        .join("")
+      labels.innerHTML = [max, (max + min) / 2, min].map((v) => `<span class="rounded bg-card/90 px-1">${num(v, 0)}</span>`).join("")
+      const mid = pts[Math.floor(pts.length / 2)][0]
+      dates.innerHTML = [pts[0][0], mid, pts[pts.length - 1][0]].map((s) => `<span>${dateFmt.format(new Date(s))}</span>`).join("")
+
+      const change = (vals[vals.length - 1] / vals[0] - 1) * 100
+      regionEl.textContent = `${idx.name} · ${idx.region}`
+      valueEl.textContent = num(vals[vals.length - 1])
+      changeEl.textContent = `${change >= 0 ? "▲ +" : "▼ −"}${num(Math.abs(change))} %`
+      changeEl.style.color = c
+      changeEl.style.background = up ? "rgb(var(--up) / 0.1)" : "rgb(var(--down) / 0.1)"
+      hoverEl.textContent = ""
+
+      if (animate && !reduced) {
+        const len = line.getTotalLength()
+        gsap.fromTo(line, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut", clearProps: "strokeDasharray,strokeDashoffset" })
+        gsap.fromTo(area, { opacity: 0 }, { opacity: 1, duration: 0.8, delay: 0.4 })
+      }
+    }
+
+    function hover(clientX: number) {
+      const r = svg.getBoundingClientRect()
+      const x = ((clientX - r.left) / r.width) * W
+      const i = Math.max(0, Math.min(pts.length - 1, Math.round((x / W) * (pts.length - 1))))
+      cross.setAttribute("x1", String(xs[i]))
+      cross.setAttribute("x2", String(xs[i]))
+      cross.setAttribute("opacity", "1")
+      dot.style.left = `${(xs[i] / W) * 100}%`
+      dot.style.top = `${(ys[i] / H) * r.height}px`
+      dot.style.opacity = "1"
+      hoverEl.textContent = `${dateFmt.format(new Date(pts[i][0]))} · ${num(pts[i][1])}`
+    }
+    function leave() {
+      cross.setAttribute("opacity", "0")
+      dot.style.opacity = "0"
+      hoverEl.textContent = ""
+    }
+    svg.addEventListener("pointermove", (e) => hover(e.clientX))
+    svg.addEventListener("pointerdown", (e) => hover(e.clientX))
+    svg.addEventListener("pointerleave", leave)
+
+    function select(id: string) {
+      current = id
+      document.querySelectorAll("[data-index]").forEach((b) => b.setAttribute("aria-selected", String((b as HTMLElement).dataset.index === id)))
+      draw()
+    }
+    document.querySelectorAll<HTMLElement>("[data-index]").forEach((b) => b.addEventListener("click", () => select(b.dataset.index!)))
+    document.querySelectorAll<HTMLElement>("[data-card]").forEach((b) =>
+      b.addEventListener("click", () => {
+        select(b.dataset.card!)
+        document.getElementById("mercados")?.scrollIntoView({ behavior: "smooth" })
+      }),
+    )
+    document.querySelectorAll<HTMLElement>("[data-range]").forEach((b) =>
+      b.addEventListener("click", () => {
+        range = b.dataset.range!
+        document.querySelectorAll("[data-range]").forEach((o) => o.setAttribute("aria-pressed", String(o === b)))
+        draw()
+      }),
+    )
+
+    draw(false)
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        draw()
+        io.disconnect()
+      }
+    }, { threshold: 0.3 })
+    io.observe(svg)
+  }
+</script>

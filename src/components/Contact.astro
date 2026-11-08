@@ -1,0 +1,102 @@
+---
+import { PROFILE } from "../data/profile"
+// El formulario prepara el email y lo abre en el correo del visitante, con Jacobo como destinatario.
+---
+
+<section id="contacto" class="py-24 lg:py-28">
+  <div class="container-x grid gap-12 lg:grid-cols-[1fr_1.2fr]">
+    <div>
+      <p class="eyebrow mb-4">Contacto</p>
+      <h2 data-split class="h-section">¿Hablamos?</h2>
+      <p class="mt-5 max-w-md text-lg leading-relaxed text-muted">
+        Para oportunidades profesionales, colaboraciones o para hablar de mercados e inversión, escríbeme.
+      </p>
+      <ul class="mt-10 space-y-3">
+        <li>
+          <a href={`mailto:${PROFILE.email}`} class="group flex items-center gap-4 rounded-xl border border-line bg-card p-4 transition hover:border-accent/50">
+            <span class="grid h-10 w-10 place-items-center rounded-lg bg-navy-900 text-white dark:bg-white/10">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            </span>
+            <span><span class="block text-xs text-muted">Email</span><span class="font-medium text-ink">{PROFILE.email}</span></span>
+          </a>
+        </li>
+        <li>
+          <a href={PROFILE.linkedin} target="_blank" rel="noopener" class="group flex items-center gap-4 rounded-xl border border-line bg-card p-4 transition hover:border-accent/50">
+            <span class="grid h-10 w-10 place-items-center rounded-lg bg-navy-900 text-white dark:bg-white/10">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.6 8.65 21 11.2 21 14.5V21h-4v-5.8c0-1.4-.03-3.2-1.95-3.2-1.95 0-2.25 1.5-2.25 3.1V21H9z"/></svg>
+            </span>
+            <span><span class="block text-xs text-muted">LinkedIn</span><span class="font-medium text-ink">in/jacobo-alvarez</span></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <form id="contact-form" data-email={PROFILE.email} class="reveal card space-y-5 p-6 sm:p-8" novalidate>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <label class="block" for="f-nombre">
+          <span class="mb-1.5 block text-sm font-medium">Nombre *</span>
+          <input id="f-nombre" name="nombre" required autocomplete="name" class="field" />
+        </label>
+        <label class="block" for="f-empresa">
+          <span class="mb-1.5 block text-sm font-medium">Empresa</span>
+          <input id="f-empresa" name="empresa" autocomplete="organization" class="field" />
+        </label>
+      </div>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <label class="block" for="f-email">
+          <span class="mb-1.5 block text-sm font-medium">Email *</span>
+          <input id="f-email" name="email" type="email" required autocomplete="email" class="field" />
+        </label>
+        <label class="block" for="f-motivo">
+          <span class="mb-1.5 block text-sm font-medium">Motivo</span>
+          <select id="f-motivo" name="motivo" class="field">
+            <option>Oportunidad profesional</option>
+            <option>Colaboración o ponencia</option>
+            <option>Hablar de mercados e inversión</option>
+            <option>Otro</option>
+          </select>
+        </label>
+      </div>
+      <label class="block" for="f-mensaje">
+        <span class="mb-1.5 block text-sm font-medium">Mensaje *</span>
+        <textarea id="f-mensaje" name="mensaje" required rows="5" class="field resize-y" placeholder="Cuéntame en qué puedo ayudarte."></textarea>
+      </label>
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+      <label class="flex items-start gap-3 text-sm text-muted" for="f-privacidad">
+        <input id="f-privacidad" type="checkbox" name="privacidad" required class="mt-0.5 h-4 w-4 accent-[rgb(var(--accent))]" />
+        <span>Acepto que mis datos se usen solo para responder a este mensaje.</span>
+      </label>
+      <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg bg-navy-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-navy-700 dark:bg-white dark:text-navy-900">
+        Enviar por email
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p data-status role="status" class="min-h-[1.25rem] text-center text-sm text-up"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .field {
+    @apply w-full rounded-lg border border-line bg-paper px-3.5 py-2.5 text-ink outline-none transition placeholder:text-muted/70 focus:border-accent focus:ring-4 focus:ring-accent/15;
+  }
+</style>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null
+  if (form) {
+    const status = form.querySelector<HTMLElement>("[data-status]")!
+    form.addEventListener("submit", (ev) => {
+      ev.preventDefault()
+      if (!form.checkValidity()) {
+        form.reportValidity()
+        return
+      }
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>
+      if (data.botcheck) return
+      const body = [data.mensaje, "", `Nombre: ${data.nombre}`, `Empresa: ${data.empresa || "-"}`, `Email: ${data.email}`].join("\n")
+      const subject = `${data.motivo} · ${data.nombre}`
+      location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      status.textContent = "Se ha abierto tu correo con el mensaje preparado. Solo tienes que enviarlo."
+    })
+  }
+</script>

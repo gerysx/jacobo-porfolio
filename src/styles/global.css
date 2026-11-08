@@ -1,0 +1,83 @@
+@import "@fontsource-variable/geist";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Paleta a juego con su imagen: azul marino del traje, blanco de la camisa y un dorado discreto */
+:root {
+  --paper: 247 249 252;
+  --card: 255 255 255;
+  --ink: 11 29 54;
+  --muted: 84 99 122;
+  --line: 222 228 237;
+  --brand: 18 41 74; /* azul marino */
+  --brand-fg: 255 255 255;
+  --accent: 37 89 160; /* azul acero para enlaces y detalles */
+  --gold: 176 141 87;
+  --up: 16 128 90;
+  --down: 196 56 56;
+  color-scheme: light;
+}
+.dark {
+  --paper: 6 15 28;
+  --card: 11 25 45;
+  --ink: 232 237 245;
+  --muted: 148 163 186;
+  --line: 29 46 72;
+  --brand: 120 165 230;
+  --brand-fg: 6 15 28;
+  --accent: 132 176 240;
+  --gold: 214 182 124;
+  --up: 52 199 140;
+  --down: 240 110 110;
+  color-scheme: dark;
+}
+
+html {
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  @apply font-sans;
+  background: rgb(var(--paper));
+  font-feature-settings: "ss01", "cv11";
+}
+::selection {
+  background: rgb(var(--accent) / 0.25);
+}
+
+.container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
+}
+.h-section {
+  @apply text-3xl font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[2.6rem];
+  text-wrap: balance;
+}
+.card {
+  @apply rounded-2xl border border-line bg-card;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Con JS y movimiento, .reveal empieza oculto y GSAP lo muestra */
+html.motion .reveal {
+  visibility: hidden;
+}
+.split-word {
+  display: inline-block;
+}

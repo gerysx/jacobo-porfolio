@@ -1,0 +1,27 @@
+---
+import { PROFILE, DISCLAIMER } from "../data/profile"
+const year = new Date().getFullYear()
+---
+
+<footer class="border-t border-line bg-card py-12">
+  <div class="container-x space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-lg bg-navy-900 text-[13px] font-semibold text-white ring-1 ring-gold/50">JÁ</span>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold">{PROFILE.name}</p>
+          <p class="text-xs text-muted">{PROFILE.role} · {PROFILE.location}</p>
+        </div>
+      </div>
+      <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+        <a href="/#mercados" class="hover:text-ink">Mercados</a>
+        <a href="/noticias" class="hover:text-ink">Noticias</a>
+        <a href="/#trayectoria" class="hover:text-ink">Trayectoria</a>
+        <a href="/#contacto" class="hover:text-ink">Contacto</a>
+        <a href={PROFILE.linkedin} target="_blank" rel="noopener" class="hover:text-ink">LinkedIn</a>
+      </nav>
+    </div>
+    <p class="max-w-3xl border-t border-line pt-6 text-xs leading-relaxed text-muted">{DISCLAIMER} Las noticias pertenecen a sus respectivos medios y se enlazan a la fuente original.</p>
+    <p class="text-xs text-muted">© {year} {PROFILE.name}</p>
+  </div>
+</footer>
