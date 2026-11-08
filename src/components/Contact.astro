@@ -10,9 +10,9 @@ import { PROFILE } from "../data/profile"
   <div class="container-x grid gap-14 lg:grid-cols-[1fr_1.2fr]">
     <div>
       <p class="eyebrow mb-4">Contacto</p>
-      <h2 data-split class="h-display text-4xl leading-tight sm:text-6xl">¿Hablamos de tu <span class="italic-gold">patrimonio</span>?</h2>
+      <h2 data-split class="h-display text-4xl leading-tight sm:text-6xl">¿<span class="italic-gold">Hablamos</span>?</h2>
       <p class="mt-6 max-w-md text-lg leading-relaxed text-muted">
-        Cuéntame brevemente qué buscas y te respondo en menos de 48 horas para concertar una primera conversación, sin compromiso.
+        Para oportunidades profesionales, colaboraciones o simplemente para hablar de mercados e inversión, escríbeme.
       </p>
       <ul class="mt-10 space-y-4">
         <li>
@@ -55,31 +55,18 @@ import { PROFILE } from "../data/profile"
         <span class="mb-1.5 block text-sm font-medium">Email *</span>
         <input name="email" type="email" required autocomplete="email" class="field" />
       </label>
-      <div class="grid gap-5 sm:grid-cols-2">
-        <label class="block">
-          <span class="mb-1.5 block text-sm font-medium">¿Qué te interesa?</span>
-          <select name="interes" class="field">
-            <option>Gestión y seguimiento de cartera</option>
-            <option>Fondos de inversión</option>
-            <option>Planes de pensiones y jubilación</option>
-            <option>Hipoteca o financiación</option>
-            <option>Otro</option>
-          </select>
-        </label>
-        <label class="block">
-          <span class="mb-1.5 block text-sm font-medium">Patrimonio aproximado</span>
-          <select name="patrimonio" class="field">
-            <option>Prefiero no decirlo</option>
-            <option>Menos de 100.000 €</option>
-            <option>100.000 € – 300.000 €</option>
-            <option>300.000 € – 1.000.000 €</option>
-            <option>Más de 1.000.000 €</option>
-          </select>
-        </label>
-      </div>
+      <label class="block">
+        <span class="mb-1.5 block text-sm font-medium">Motivo</span>
+        <select name="interes" class="field">
+          <option>Oportunidad profesional</option>
+          <option>Colaboración o ponencia</option>
+          <option>Hablar de mercados e inversión</option>
+          <option>Otro</option>
+        </select>
+      </label>
       <label class="block">
         <span class="mb-1.5 block text-sm font-medium">Mensaje *</span>
-        <textarea name="mensaje" required rows="4" class="field resize-y" placeholder="Cuéntame tu situación y qué te gustaría conseguir."></textarea>
+        <textarea name="mensaje" required rows="4" class="field resize-y" placeholder="Cuéntame en qué puedo ayudarte."></textarea>
       </label>
       <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
       <label class="flex items-start gap-3 text-sm text-muted">
@@ -119,8 +106,7 @@ import { PROFILE } from "../data/profile"
         `Nombre: ${data.nombre}`,
         `Email: ${data.email}`,
         `Teléfono: ${data.telefono || "-"}`,
-        `Interés: ${data.interes}`,
-        `Patrimonio aproximado: ${data.patrimonio}`,
+        `Motivo: ${data.interes}`,
       ].join("\n")
       const subject = `Contacto web: ${data.interes} · ${data.nombre}`
       location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
