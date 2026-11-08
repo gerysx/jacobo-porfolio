@@ -1,9 +1,13 @@
-// Despliegue en Cloudflare (Workers con assets estáticos): sirve la carpeta dist que genera `npm run build`.
+// Despliegue en Cloudflare (Workers con assets estáticos): sirve la carpeta dist que genera `npm run build`
+// y las rutas /api/* desde worker/index.js.
 {
   "name": "jacobo-porfolio",
   "compatibility_date": "2025-09-01",
+  // Worker que sirve la web y la API de cotizaciones (/api/search, /api/quote, /api/calc)
+  "main": "worker/index.js",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS"
   },
   // Necesario para las previews de cada PR (npx wrangler preview)
   "previews": {}
